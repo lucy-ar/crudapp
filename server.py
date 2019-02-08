@@ -1,14 +1,13 @@
-import bson.binary
-import pymongo
+from pymongo import MongoClient
 import json
 from bson import json_util
-
-from flask import Flask, request, jsonify, send_file
+from flask import Flask, request, jsonify, make_response
+from base64 import b64encode
 app = Flask(__name__)
 
 
 def getCollection(db_name, coll_name):
-    client = pymongo.MongoClient("mongodb+srv://qtma:qtma2019@lucyar-eojj4.mongodb.net/test?retryWrites=true")
+    client = MongoClient("mongodb+srv://qtma:qtma2019@lucyar-eojj4.mongodb.net/test?retryWrites=true")
     db = (client[db_name])
     collection = db[coll_name]
     return collection
@@ -26,10 +25,11 @@ def getGLTF(filename):
 @app.route('/models/<filename>.bin', methods=['GET'])
 def getBIN(filename):
     coll = getCollection("models", "gltf")
-    response = coll.find({"filename": filename})[0]['file']
-    j = json.loads(json_util.dumps(response))
-    return jsonify(j)
-
+    filename += ".bin"
+    query = coll.find({"filename": filename})[0]['file']
+    response = make_response(query)
+    response.mimetype = "binary/octet-stream"
+    return response
 
 
 if __name__ == '__main__':
