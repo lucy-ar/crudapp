@@ -4,10 +4,10 @@ from bson import json_util
 from flask import Flask, request, jsonify, make_response
 from base64 import b64encode
 app = Flask(__name__)
+client = MongoClient("mongodb+srv://qtma:qtma2019@lucyar-eojj4.mongodb.net/test?retryWrites=true")
 
 
 def getCollection(db_name, coll_name):
-    client = MongoClient("mongodb+srv://qtma:qtma2019@lucyar-eojj4.mongodb.net/test?retryWrites=true")
     db = (client[db_name])
     collection = db[coll_name]
     return collection
